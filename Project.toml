@@ -1,0 +1,13 @@
+name = "VRPTW"
+uuid = "98e944a4-2f93-413e-9005-d4dae69c2efa"
+authors = ["Payakorn Saksuriya"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
