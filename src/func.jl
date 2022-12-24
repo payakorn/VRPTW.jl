@@ -3,9 +3,9 @@ function my_func(x, y)
 end
 
 struct VR
-    a
-    b
+    a::Any
+    b::Any
     function VR(a, b)
-        new(a+1, b+1)
+        new(a + 1, b + 1)
     end
 end
