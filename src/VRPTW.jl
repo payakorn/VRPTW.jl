@@ -6,4 +6,6 @@ using Revise, JLD2
 include("func.jl")
 include("load_data.jl")
 
+export load_solomon_data, dir, dir_data
+
 end

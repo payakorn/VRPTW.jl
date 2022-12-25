@@ -1,4 +1,4 @@
-struct Solomon
+struct Problem
     name::String
     num_node::Integer
     distance::Matrix
@@ -11,10 +11,27 @@ struct Solomon
 end
 
 
-function load_data(class_ins::String; num_node = 100)
+function dir()
+    splitdir(splitdir(Base.find_package("VRPTW"))[1])[1]
+end
+
+
+function dir(d...)
+    d = string.(d)
+    joinpath(dir(), d...)
+end
+
+
+function dir_data(class_ins::String, num_node::Integer)
+    dir("data", "solomon_jld2", "$(lowercase(class_ins))-$num_node.jld2")
+end
+
+
+
+function load_solomon_data(class_ins::String; num_node=100)
     @info "loading Solomon $(uppercase(class_ins)) => with number of nodes = $num_node"
-    data = load("./data/solomon_jld2/$(uppercase(class_ins))-$num_node.jld2")
-    return Solomon(
+    data = load(dir_data(class_ins, num_node))
+    return Problem(
         uppercase(class_ins),
         num_node,
         data["distance_matrix"],
