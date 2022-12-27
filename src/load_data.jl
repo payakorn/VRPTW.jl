@@ -11,11 +11,33 @@ struct Problem
 end
 
 
+"""dir()
+
+### Returns:
+
+    the directory of package VRPTW
+
+"""
 function dir()
     splitdir(splitdir(Base.find_package("VRPTW"))[1])[1]
 end
 
 
+"""
+    dir(d...); 
+    
+### input
+- `d...` -- directory seperated by commas (,) e.g. dir("src", "data")
+
+### Returns:
+    dir string: the directory of package VRPTW
+
+### Example:
+    ```julia-repl
+    dir("src", "data") 
+    return: ".../VRPTW/src/data"
+    ```
+"""
 function dir(d...)
     d = string.(d)
     joinpath(dir(), d...)
@@ -27,7 +49,11 @@ function dir_data(class_ins::String, num_node::Integer)
 end
 
 
+"""load solomon instance into a struct of Problem
 
+Returns:
+    struct: Problem(...)
+"""
 function load_solomon_data(class_ins::String; num_node=100)
     @info "loading Solomon $(uppercase(class_ins)) => with number of nodes = $num_node"
     data = load(dir_data(class_ins, num_node))
@@ -41,5 +67,5 @@ function load_solomon_data(class_ins::String; num_node=100)
         data["last_time_window"],
         data["service"],
         data["capacity"]
-    );
+    )
 end
