@@ -22,7 +22,7 @@ function fix_route_zero(route::Array)
         return false
     elseif length(route) > 2
         zero_position = findall(x -> x == 0, route)
-        for i in (length(zero_position) - 1):-1:1
+        for i in (length(zero_position)-1):-1:1
             if zero_position[i+1] - zero_position[i] == 1
                 push!(delete_position, zero_position[i])
             end
@@ -47,7 +47,7 @@ end
 
 
 function distance(point1::Point, point2::Point)
-    sqrt((point1.x^2-point1.x)^2 + (point2.x^2-point2.x)^2)
+    sqrt((point1.x^2 - point1.x)^2 + (point2.x^2 - point2.x)^2)
 end
 
 
@@ -60,7 +60,7 @@ function distance(route::Array, distance_matrix::Matrix)
 end
 
 
-function distance(route::Array, distance_matrix::Matrix)
+function distance(solution::Solution)
     nothing
 end
 

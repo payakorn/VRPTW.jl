@@ -9,6 +9,6 @@ include("load_data.jl")
 include("solution.jl")
 
 # export function that clould be used
-export load_solomon_data, dir, dir_data, Solution, Problem, swap!, add!, push!, splice!, empty_solution, fix_route_zero, route_length
+export load_solomon_data, dir, dir_data, Solution, Problem, swap!, add!, push!, splice!, empty_solution, fix_route_zero, route_length, distance
 
 end
