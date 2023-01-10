@@ -1,7 +1,7 @@
 module VRPTW
 
 import Base.push!, Base.splice!
-using Revise, JLD2, JuMP, CSV, JSON3
+using Revise, JLD2, JuMP, CSV, JSON, JSON3
 
 # Write your package code here.
 include("func.jl")
@@ -11,6 +11,6 @@ include("opt_func_solution.jl")
 include("optimal.jl")
 
 # export function that clould be used
-export load_solomon_data, dir, dir_data, Solution, Problem, swap!, add!, push!, splice!, empty_solution, fix_route_zero, route_length, distance, opt_balancing, find_opt, show_opt_solution, dict_to_solution
+export load_solomon_data, dir, dir_data, Solution, Problem, swap!, add!, push!, splice!, empty_solution, fix_route_zero, route_length, distance, opt_balancing, find_opt, show_opt_solution, dict_to_solution, load_solution, max_completion_time_and_feasible, find_route
 
 end

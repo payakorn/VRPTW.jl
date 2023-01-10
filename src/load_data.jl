@@ -57,6 +57,12 @@ Returns:
 function load_solomon_data(class_ins::String; num_node=100)
     @info "loading Solomon $(uppercase(class_ins)) => with number of nodes = $num_node"
     data = load(dir_data(class_ins, num_node))
+
+
+    # set the service time of node 1 (depot node) to zero
+    service_time = data["service"]
+    service_time[1] = 0.0
+
     return Problem(
         uppercase(class_ins),
         num_node,

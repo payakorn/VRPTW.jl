@@ -1,4 +1,4 @@
-using CPLEX
+using Cbc
 
 function opt_balancing(ins_name::String, num_vehicle::Integer)
 
@@ -15,7 +15,7 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     # number of node
     n = length(d) - 1
 
-    m = Model(CPLEX.Optimizer)
+    m = Model(Cbc.Optimizer)
     # set_optimizer_attribute(m, "logLevel", 1)
 
     # num_vehicle = 3
@@ -36,7 +36,7 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     @variable(m, 0 <= CM[i=K,j=K; i<j])
 
 
-    # add eaiting time 
+    # add waiting time 
     @variable(m, w[i=0:n], Bin)
 
 
@@ -53,11 +53,13 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     # end
 
 
+    # one vehicle in and out each node
     for i = 1:n
         @constraint(m, sum(x[j, i, k] for j in 0:n for k in K if i != j) == 1)
         @constraint(m, sum(x[i, j, k] for j in 0:n for k in K if i != j) == 1)
     end
 
+    # continuity
     for j in 1:n
         for k in K
             @constraint(m, sum(x[i, j, k] for i in 0:n if i != j) - sum(x[j, l, k] for l in 0:n if j != l) == 0)

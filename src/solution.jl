@@ -92,9 +92,60 @@ end
 
 
 function dict_to_solution(d::Dict)
-    sol_list = deepcopy(d[1])
+    sol_list = try deepcopy(d[1]) catch e; deepcopy(d["1"]) end
     for i in 2:(length(d))
-        append!(sol_list, d[i][2:end])
+        try append!(sol_list, d[i][2:end]) catch e; append!(sol_list, d["$i"][2:end]) end
     end
     return sol_list
+end
+
+
+function find_route(solution::Array)
+    zero_position = findall(x->x==0, solution)
+    num_vehicle = length(zero_position) - 1
+
+    route = Dict()
+
+    for k in 1:num_vehicle
+        route[k] = solution[(zero_position[k]):(zero_position[k+1])]
+    end
+    return route
+end
+
+
+function max_completion_time_and_feasible(solution::Solution)
+    num_vehicle = route_length(solution)
+    max_com = []
+    total_com = zero(1)
+    route = find_route(solution.route)
+
+    for k in 1:num_vehicle
+        t = zero(1)
+        c = zero(1)
+        for i in 1:(length(route[k])-2)
+
+            # chack time window
+            if t + solution.problem.service_time[route[k][i]+1] + solution.problem.distance[route[k][i]+1, route[k][i+1]+1] <= solution.problem.lower_time_window[route[k][i+1]+1]
+                @show t = solution.problem.lower_time_window[route[k][i+1]+1]
+            else
+                @show t += solution.problem.service_time[route[k][i]+1] + solution.problem.distance[route[k][i]+1, route[k][i+1]+1]
+            end
+            # calculate completion time
+            @show c = t + solution.problem.service_time[route[k][i+1]+1]
+
+            # calculate total completion time
+            total_com += c
+        end
+        push!(max_com, c)
+    end
+    return max_com, total_com
+end
+
+
+function load_solution(ins_name::String)
+    js = JSON.parsefile("data\\opt_solomon\\balancing_completion_time\\C101-25.json")
+    route = dict_to_solution(js["route"])
+    (ins_name, num_node) = split(js["name"], "-")
+    problem = load_solomon_data(String(ins_name), num_node=parse(Int64, num_node))
+    Solution(route, problem)
 end
