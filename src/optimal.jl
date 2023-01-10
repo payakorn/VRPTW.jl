@@ -1,4 +1,4 @@
-using Cbc
+using Gurobi
 
 function opt_balancing(ins_name::String, num_vehicle::Integer)
 
@@ -15,7 +15,7 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     # number of node
     n = length(d) - 1
 
-    m = Model(Cbc.Optimizer)
+    m = Model(Gurobi.Optimizer)
     # set_optimizer_attribute(m, "logLevel", 1)
 
     # num_vehicle = 3
@@ -79,6 +79,10 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
         for j in 0:n
             if i != j
                 for k in K
+
+                    @constraint(m, t[i] + service[i+1] + distance_matrix[i+1, j+1] - M*(1-x[i, j, k]) <= t[j] )
+
+                    # 
                     @constraint(m, t[i] + service[i+1] + distance_matrix[i+1, j+1] - M*(1-x[i, j, k]) - M*w[j] <= t[j] )
                     @constraint(m, t[i] + service[i+1] + distance_matrix[i+1, j+1] + M*(1-x[i, j, k]) + M*w[j] >= t[j] )
                 end
