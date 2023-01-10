@@ -1,8 +1,9 @@
-using JuMP, Gurobi, JLD2
+using JuMP, Cbc, JLD2
 
-# function opt(ins_name::String, num_vehicle::Integer)
+function opt_balancing(ins_name::String, num_vehicle::Integer)
 
-    data = load(joinpath(@__DIR__, "..", "data", "solomon_jld2", "c101-25.jld2"))
+    # data = load(joinpath(@__DIR__, "..", "data", "solomon_jld2", "c101-25.jld2"))
+    data = load(dir("data", "solomon_jld2", "$(lowercase(ins_name)).jld2"))
     # data = load(joinpath(@__DIR__, "..", "data", "solomon_jld2", "$ins_name.jld2"))
     d = data["upper"]
     low_d = data["lower"]
@@ -14,10 +15,10 @@ using JuMP, Gurobi, JLD2
     # number of node
     n = length(d) - 1
 
-    m = Model(Gurobi.Optimizer)
+    m = Model(Cbc.Optimizer)
     # set_optimizer_attribute(m, "logLevel", 1)
 
-    num_vehicle = 3
+    # num_vehicle = 3
     K = 1:num_vehicle
     M = n*1000
 
@@ -29,7 +30,8 @@ using JuMP, Gurobi, JLD2
     @variable(m, x[i=0:n, j=0:n, k=K; i!=j], Bin)
     @variable(m, low_d[i+1] <= t[i=0:n] <= d[i+1])
 
-    # new variables:
+    # new variables: CMAX_i = max completion time of vehicle i
+    #               CM_ij = |CMAX_i - CMAX_j|
     @variable(m, 0 <= CMAX[i=K])
     @variable(m, 0 <= CM[i=K,j=K; i<j])
 
@@ -80,7 +82,7 @@ using JuMP, Gurobi, JLD2
         end
     end
     
-    # C max constraints
+    # C max constraints: the max completion time is equal to the completion time of the last visit
     for i in 1:n
         for k in K
             @constraint(m, t[i] + service[i] + M*(1-x[i, 0, k]) >= CMAX[k])
@@ -88,6 +90,7 @@ using JuMP, Gurobi, JLD2
         end
     end
 
+    # the different between two max completion time of two vehicles
     for i in K
         for j in K
             if i < j
@@ -97,10 +100,26 @@ using JuMP, Gurobi, JLD2
         end
     end
 
-    # @objective(m, Min, sum(distance_matrix[i+1, j+1]*x[i, j, k] for i in 0:n for j in 0:n for k in K if i != j))
+    # objective to minimize the total different of max completion time of all vehicles
     @objective(m, Min, sum(CM[i, j] for i in K for j in K if i < j))
 
     optimize!(m)
-#     return m
-# end
+    return m, x, t, CM, CMAX
+end
 
+
+function find_opt()
+    NameNumVehicle = CSV.File(dir("data", "solomon_opt_from_web", "Solomon_Name_NumCus_NumVehicle.csv"))
+    Ins_name = [String("$(NameNumVehicle[i][1])-$(NameNumVehicle[i][2])") for i in 1:length(NameNumVehicle)]
+    Num_vehicle = [NameNumVehicle[i][3] for i in 1:length(NameNumVehicle)]
+
+    for (ins_name, num_vehicle) in zip(Ins_name, Num_vehicle)
+        if !isfile(dir("data", "opt_solomon", "balancing_completion_time", "$ins_name.json"))
+            println("Optimizing $(ins_name)!!!")
+            m, x, t, CM, CMAX = opt_balancing(ins_name, num_vehicle)
+            tex, route = show_opt_solution(x, length(t), num_vehicle)
+            write_solution(route, ins_name, tex, m, t, obj_function="balancing_completion_time")
+        end
+        break
+    end
+end
