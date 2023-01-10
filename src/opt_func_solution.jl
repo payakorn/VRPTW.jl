@@ -51,7 +51,7 @@ function write_solution(route::Dict, ins_name::String, tex::String, m, t, CMAX; 
     end
 
     # calculate max completion time
-    max_com = Dict(i => value.(CMAX[k]) for k in 1:(length(route)))
+    max_com = Dict(k => value.(CMAX[k]) for k in 1:(length(route)))
 
     # total completion time
     total_com = sum([value.(t[i]) for i in 1:(length(t)-1)])
