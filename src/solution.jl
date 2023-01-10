@@ -126,12 +126,12 @@ function max_completion_time_and_feasible(solution::Solution)
 
             # chack time window
             if t + solution.problem.service_time[route[k][i]+1] + solution.problem.distance[route[k][i]+1, route[k][i+1]+1] <= solution.problem.lower_time_window[route[k][i+1]+1]
-                @show t = solution.problem.lower_time_window[route[k][i+1]+1]
+                t = solution.problem.lower_time_window[route[k][i+1]+1]
             else
-                @show t += solution.problem.service_time[route[k][i]+1] + solution.problem.distance[route[k][i]+1, route[k][i+1]+1]
+                t += solution.problem.service_time[route[k][i]+1] + solution.problem.distance[route[k][i]+1, route[k][i+1]+1]
             end
             # calculate completion time
-            @show c = t + solution.problem.service_time[route[k][i+1]+1]
+            c = t + solution.problem.service_time[route[k][i+1]+1]
 
             # calculate total completion time
             total_com += c

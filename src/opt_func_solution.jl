@@ -42,7 +42,7 @@ function print_solution()
 end
 
 
-function write_solution(route::Dict, ins_name::String, tex::String, m, t, CMAX; obj_function="balancing_completion_time"::String)
+function write_solution(route::Dict, ins_name::String, tex::String, m, t, CMAX, service; obj_function="balancing_completion_time"::String)
     # check location
     location = dir("data", "opt_solomon", "balancing_completion_time")
     # location = joinpath(@__DIR__, "..", "" "opt_solomon", "$name") 
@@ -54,7 +54,7 @@ function write_solution(route::Dict, ins_name::String, tex::String, m, t, CMAX; 
     max_com = Dict(k => value.(CMAX[k]) for k in 1:(length(route)))
 
     # total completion time
-    total_com = sum([value.(t[i]) for i in 1:(length(t)-1)])
+    total_com = sum([value.(t[i]) + service[i+1] for i in 1:(length(t)-1)])
 
     d = Dict("name" => ins_name, "num_vehicle" => length(route), "route" => route, "tex" => tex, "max_completion_time" => max_com, "obj_function" => JuMP.objective_value(m), "solve_time" => solve_time(m), "relative_gap" => relative_gap(m), "solver_name" => solver_name(m), "total_com" => total_com)
 

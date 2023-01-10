@@ -131,7 +131,7 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     @objective(m, Min, sum(CM[i, j] for i in K for j in K if i < j))
 
     optimize!(m)
-    return m, x, t, CM, CMAX, w
+    return m, x, t, CM, CMAX, w, service
 end
 
 
@@ -143,9 +143,9 @@ function find_opt()
     for (ins_name, num_vehicle) in zip(Ins_name, Num_vehicle)
         if !isfile(dir("data", "opt_solomon", "balancing_completion_time", "$ins_name.json"))
             println("Optimizing $(ins_name)!!!")
-            m, x, t, CM, CMAX = opt_balancing(ins_name, num_vehicle)
+            m, x, t, CM, CMAX, w, service = opt_balancing(ins_name, num_vehicle)
             tex, route = show_opt_solution(x, length(t), num_vehicle)
-            write_solution(route, ins_name, tex, m, t, CMAX, obj_function="balancing_completion_time")
+            write_solution(route, ins_name, tex, m, t, CMAX, service, obj_function="balancing_completion_time")
         end
     end
 end
