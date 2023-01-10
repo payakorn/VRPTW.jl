@@ -89,3 +89,12 @@ function splice!(solution::Solution, pos::Integer, cus::Integer)
     splice!(route, pos, cus)
     return Solution(route, solution.problem)
 end
+
+
+function dict_to_solution(d::Dict)
+    sol_list = deepcopy(d[1])
+    for i in 2:(length(d))
+        append!(sol_list, d[i][2:end])
+    end
+    return sol_list
+end
