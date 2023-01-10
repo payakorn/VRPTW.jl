@@ -1,4 +1,4 @@
-using Gurobi
+using CPLEX
 
 function opt_balancing(ins_name::String, num_vehicle::Integer)
 
@@ -15,7 +15,7 @@ function opt_balancing(ins_name::String, num_vehicle::Integer)
     # number of node
     n = length(d) - 1
 
-    m = Model(Gurobi.Optimizer)
+    m = Model(CPLEX.Optimizer)
     # set_optimizer_attribute(m, "logLevel", 1)
 
     # num_vehicle = 3
